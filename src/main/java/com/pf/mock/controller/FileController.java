@@ -20,8 +20,10 @@ public class FileController {
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public  String uploadFile(@RequestParam("audio") MultipartFile file, @RequestParam("score") int score) {
-        System.out.println("score = " + score);
+    public String uploadFile(@RequestParam("audio") MultipartFile file,
+                              @RequestParam("userid")String userId,
+                              String content, int score) {
+        System.out.println("userId = " + userId + ", score = " + score + ",content = " + content);
         if (file == null) {
             return "null";
         }
@@ -40,5 +42,10 @@ public class FileController {
 
         }
         return "{}";
+    }
+
+    @RequestMapping("download")
+    public String downloadFile() {
+        return "";
     }
 }

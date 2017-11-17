@@ -1,9 +1,9 @@
-package com.pf.mock.util;
+package com.pf.mock.utils;
 
 /**
  * Created by fupingfu on 2017/7/28.
  */
-public class FileUtils {
+public class FileUtil {
     /**
      * 读取File
      * @param fileName
@@ -16,4 +16,6 @@ public class FileUtils {
     public static void writeFile(String fileName, String content) {
 
     }
+
+
 }

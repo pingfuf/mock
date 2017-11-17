@@ -12,6 +12,8 @@ public class Config {
 
     public static final String BASE_DIR = "data";
 
+    public static final String RN_ROOT_DIR = "F:\\react";
+
     /**
      * 得到数据的根路径
      *
@@ -35,5 +37,9 @@ public class Config {
         }
 
         return path;
+    }
+
+    public static String getReactVersionFilePath() {
+        return RN_ROOT_DIR + File.separator + "version.txt";
     }
 }
