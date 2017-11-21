@@ -6,6 +6,7 @@ import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.RnVersion;
 import com.pf.mock.service.ReactService;
 import com.pf.mock.utils.CommandUtil;
+import com.pf.mock.utils.FileUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class RnController extends BaseController {
     private ReactService mService;
 
     @RequestMapping("/latest")
-    public @ResponseBody String getLatestVersion() {
+    @ResponseBody
+    public String getLatestVersion() {
         RnVersion version = mService.getLatestVersion();
         BaseResult<RnVersion> result = createResult(0, version);
 
@@ -60,8 +62,10 @@ public class RnController extends BaseController {
         if (requestVersion == null || requestVersion.length() < 1) {
             requestVersion = mService.getLatestVersion().getName();
         }
-        System.out.println(String.format("phoneType=%s, localVersion=%s, requestVersion=%s", phoneType, localVersion, requestVersion));
+
         File file = getResponseFile(phoneType, localVersion, requestVersion);
+        System.out.println(String.format("phoneType=%s, localVersion=%s, requestVersion=%s, file=%s",
+                phoneType, localVersion, requestVersion, file.getName()));
         byte[] body = null;
         InputStream is = new FileInputStream(file);
         body = new byte[is.available()];
@@ -74,9 +78,26 @@ public class RnController extends BaseController {
         return entity;
     }
 
+    @RequestMapping("/updateInfo")
+    @ResponseBody
+    public String getUpdateInfo(@RequestParam String phoneType, @RequestParam String localVersion) {
+        if (localVersion == null || localVersion.length() < 1) {
+            return "{}";
+        }
+        String path = Config.RN_ROOT_DIR + File.separator + "update";
+        String type = "andr".equals(phoneType) ? "android" : "ios";
+        path = path + File.separator + type + "_";
+        path = path + mService.getLatestVersion().getName();
+        path = path + "_" + localVersion + ".txt";
+
+        System.out.println(path);
+
+        return FileUtil.readFile(path);
+    }
+
     private File getResponseFile(String phoneType, String localVersion, String requestVersion) {
         String path = Config.RN_ROOT_DIR + File.separator + "update";
-        String type = phoneType.equals("andr")? "android" : "ios";
+        String type = "andr".equals(phoneType)? "android" : "ios";
         if (localVersion == null || localVersion.length() < 1) {
             path += File.separator + type + "_" + requestVersion + ".zip";
         } else {
