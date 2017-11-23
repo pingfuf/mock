@@ -80,10 +80,6 @@ public class RnUtil {
             if (array.length > 3) {
                 version.setDate(array[3]);
             }
-
-            if (array.length > 4) {
-                version.setDescription(array[4]);
-            }
         }
 
         return version;

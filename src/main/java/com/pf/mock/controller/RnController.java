@@ -32,7 +32,7 @@ public class RnController extends BaseController {
     @ResponseBody
     public String getLatestVersion() {
         RnVersion version = mService.getLatestVersion();
-        BaseResult<RnVersion> result = createResult(0, version);
+        BaseResult<RnVersion> result = createResult(100000, version);
 
         return JSON.toJSONString(result);
     }

@@ -8,7 +8,6 @@ public class RnVersion implements Serializable {
     private String name;
     private int code;
     private String date;
-    private String description;
     private String tag;
 
     public String getName() {
@@ -33,14 +32,6 @@ public class RnVersion implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getTag() {

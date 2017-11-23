@@ -13,7 +13,6 @@ public class ReactService {
         version.setDate("2017-12-02");
         version.setName("1.1");
         version.setTag("v1.1");
-        version.setDescription("测试");
 
         return version;
     }
