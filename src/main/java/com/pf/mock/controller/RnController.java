@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.pf.mock.Config;
 import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.RnVersion;
+import com.pf.mock.data.UpdateInfo;
 import com.pf.mock.service.ReactService;
 import com.pf.mock.utils.CommandUtil;
 import com.pf.mock.utils.FileUtil;
@@ -30,9 +31,9 @@ public class RnController extends BaseController {
 
     @RequestMapping("/latest")
     @ResponseBody
-    public String getLatestVersion() {
+    public String getLatestVersion(@RequestParam String phoneType) {
         RnVersion version = mService.getLatestVersion();
-        BaseResult<RnVersion> result = createResult(100000, version);
+        BaseResult<RnVersion> result = createResult(getSuccessCode(phoneType), version);
 
         return JSON.toJSONString(result);
     }
@@ -91,8 +92,11 @@ public class RnController extends BaseController {
         path = path + "_" + localVersion + ".txt";
 
         System.out.println(path);
+        String updateInfoStr = FileUtil.readFile(path);
+        UpdateInfo updateInfo = JSON.parseObject(updateInfoStr, UpdateInfo.class);
+        BaseResult<UpdateInfo> result = createResult(getSuccessCode(phoneType), updateInfo);
 
-        return FileUtil.readFile(path);
+        return JSON.toJSONString(result);
     }
 
     private File getResponseFile(String phoneType, String localVersion, String requestVersion) {
@@ -105,5 +109,14 @@ public class RnController extends BaseController {
         }
 
         return new File(path);
+    }
+
+    private int getSuccessCode(String phoneType) {
+        int code = 0;
+        if (!"andr".equals(phoneType)) {
+            return 100000;
+        }
+
+        return code;
     }
 }
