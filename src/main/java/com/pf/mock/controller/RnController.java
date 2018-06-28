@@ -2,6 +2,7 @@ package com.pf.mock.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.pf.mock.Config;
+import com.pf.mock.data.BaseHyResult;
 import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.RnVersion;
 import com.pf.mock.data.UpdateInfo;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,6 +35,18 @@ public class RnController extends BaseController {
         RnVersion version = mService.getLatestVersion();
         BaseResult<RnVersion> result = createResult(getSuccessCode(phoneType), version);
 
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/hy")
+    @ResponseBody
+    public String getHyVersion() {
+        RnVersion version = mService.getLatestVersion();
+        BaseHyResult<RnVersion> result = new BaseHyResult<RnVersion>();
+        result.setErrorCode("G_10000");
+        result.setStatus(1);
+        result.setMessage("");
+        result.setData(mService.getHyVersion());
         return JSON.toJSONString(result);
     }
 
@@ -79,13 +91,28 @@ public class RnController extends BaseController {
         return entity;
     }
 
+    @RequestMapping("/downloadHy")
+    public ResponseEntity<byte[]> downloadHyResource() throws IOException {
+        File file = new File(Config.ROOT_DIR + File.separator + "hy.zip");
+        byte[] body = null;
+        InputStream is = new FileInputStream(file);
+        body = new byte[is.available()];
+        is.read(body);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attchement;filename=" + file.getName());
+        HttpStatus statusCode = HttpStatus.OK;
+        ResponseEntity<byte[]> entity = new ResponseEntity<byte[]>(body, headers, statusCode);
+
+        return entity;
+    }
+
     @RequestMapping("/updateInfo")
     @ResponseBody
     public String getUpdateInfo(@RequestParam String phoneType, @RequestParam String localVersion) {
         if (localVersion == null || localVersion.length() < 1) {
             return "{}";
         }
-        String path = Config.RN_ROOT_DIR + File.separator + "update";
+        String path = Config.ROOT_DIR + File.separator + "update";
         String type = "andr".equals(phoneType) ? "android" : "ios";
         path = path + File.separator + type + "_";
         path = path + mService.getLatestVersion().getName();
@@ -100,7 +127,7 @@ public class RnController extends BaseController {
     }
 
     private File getResponseFile(String phoneType, String localVersion, String requestVersion) {
-        String path = Config.RN_ROOT_DIR + File.separator + "update";
+        String path = Config.ROOT_DIR + File.separator + "update";
         String type = "andr".equals(phoneType)? "android" : "ios";
         if (localVersion == null || localVersion.length() < 1) {
             path += File.separator + type + "_" + requestVersion + ".zip";

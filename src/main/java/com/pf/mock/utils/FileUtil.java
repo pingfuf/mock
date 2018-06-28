@@ -3,10 +3,9 @@ package com.pf.mock.utils;
 import com.pf.mock.Config;
 import com.pf.mock.data.RnVersion;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by fupingfu on 2017/7/28.
@@ -44,9 +43,43 @@ public class FileUtil {
         return text;
     }
 
-    public static void writeFile(String fileName, String content) {
-
+    public static boolean writeFile(String fileName, String content) {
+        boolean flag = false;
+        try {
+            //打开一个写文件器，构造函数中的第二个参数true表示以追加形式写文件
+            FileWriter writer = new FileWriter(fileName, false);
+            writer.write(content);
+            writer.close();
+            flag = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return flag;
     }
 
+    public static List<String> getMockFileList(String path) {
+        mockFiles = new ArrayList<String>();
+        traverseFolder(path);
+        return mockFiles;
+    }
 
+    private static List<String> mockFiles;
+    public static void traverseFolder(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return;
+        }
+
+        File[] files = file.listFiles();
+        if (files.length == 0) {
+            return;
+        }
+        for (File file2 : files) {
+            if (file2.isDirectory()) {
+                traverseFolder(file2.getAbsolutePath());
+            } else {
+                mockFiles.add(file2.getAbsolutePath());
+            }
+        }
+    }
 }

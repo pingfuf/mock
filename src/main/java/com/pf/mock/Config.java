@@ -1,7 +1,5 @@
 package com.pf.mock;
 
-import org.springframework.beans.PropertyAccessorUtils;
-
 import java.io.File;
 
 /**
@@ -12,7 +10,7 @@ public class Config {
 
     public static final String BASE_DIR = "data";
 
-    public static final String RN_ROOT_DIR = "F:\\react";
+    public static final String ROOT_DIR = initMockPath();
 
     /**
      * 得到数据的根路径
@@ -40,6 +38,16 @@ public class Config {
     }
 
     public static String getReactVersionFilePath() {
-        return RN_ROOT_DIR + File.separator + "version.txt";
+        return ROOT_DIR + File.separator + "version.txt";
+    }
+
+    private static String initMockPath() {
+        String path = "/Users/pingfu/mock";
+        File file = new File(path);
+        if (!file.canRead()) {
+            path = "F:\\mock";
+        }
+
+        return path;
     }
 }

@@ -10,8 +10,11 @@
     <context:annotation-config />
     <mvc:annotation-driven />
 
+    <mvc:default-servlet-handler/>
+    <!--<mvc:resources location="/pages/static/" mapping="/js/**" />-->
+
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="prefix" value="/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 

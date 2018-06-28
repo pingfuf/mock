@@ -12,6 +12,7 @@ public class MockInfo implements Serializable {
     private String username;
     private String url;
     private String path;
+    private String content;
 
     public int getId() {
         return id;
@@ -43,5 +44,13 @@ public class MockInfo implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

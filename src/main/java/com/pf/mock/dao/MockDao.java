@@ -1,8 +1,12 @@
 package com.pf.mock.dao;
 
+import com.pf.mock.Config;
 import com.pf.mock.data.MockInfo;
+import com.pf.mock.utils.FileUtil;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,11 +15,5 @@ import java.util.List;
 @Resource
 public class MockDao {
 
-    public List<MockInfo> getMockListByUsername(String username) {
-        return null;
-    }
 
-    public List<MockInfo> getMockListByUrl(String url) {
-        return null;
-    }
 }
