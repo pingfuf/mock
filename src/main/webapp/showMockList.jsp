@@ -19,40 +19,57 @@
     <script src="./static/js/jquery.min.js"></script>
     <style type="text/css">
         #container {
-            width: 960px;
+            width: 1200px;
             margin-left: auto;
             margin-right: auto;
         }
         #top {
             margin-top: 40px;
             margin-bottom: 30px;
+            margin-left: 10px;
             width: 960px;
         }
         .mockName {
-            height: 40px;
-            width: 220px;
+            height: 30px;
+            width: 320px;
         }
         .button {
-            height: 40px;
+            height: 50px;
             width: 80px;
+        }
+        .iframe {
+            height:1600px;
+            width:1200px;
+            border-style: none;
         }
     </style>
 </head>
 <body>
     <script language="JavaScript">
         $(document).ready(function () {
-            alert("this is temp")
+            $("#search").click(function(){
+                var url = "./mock/showMockListInfo";
+                var mockName = $("#mockName").val();
+                if (mockName != null && mockName.length > 0) {
+                    url = url + "&name=" + mockName;
+                }
+                $("#iframe").src = url;
+            });
+            
+            $("#add").click(function () {
+                window.open("./mock/update");
+            })
         });
     </script>
 
     <div id="container">
         <div id="top">
-            <label>mock名称</label>
+            <label>mock名称:</label>
             <input id="mockName" type="text"  class="mockName">
             <input id="search" class="button" type="button" value="搜索">
             <input id="add" class="button" type="button" value="添加">
         </div>
-        <iframe width="960px" height="1600px" src="./mock/showMockListInfo"></iframe>
+        <iframe id="iframe" class="iframe" src="./mock/showMockListInfo"></iframe>
     </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.pf.mock.controller;
 
+import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.MockInfo;
 import com.pf.mock.service.MockService;
 import java.util.List;
@@ -12,8 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/mock")
@@ -33,20 +32,20 @@ public class MockController extends BaseController {
     }
 
     @RequestMapping("showMockListInfo")
-    public ModelAndView showMockListInfo() {
+    public ModelAndView showMockListInfo(@RequestParam(defaultValue = "") String mockName ) {
         ModelAndView modelAndView = new ModelAndView("mockList");
-        modelAndView.addObject("mockList", mockService.getMockList());
+        modelAndView.addObject("mockList", mockService.getMockList(mockName));
         return modelAndView;
     }
 
     @RequestMapping("/content/**")
     @ResponseBody
-    public String getMockInfoContent(HttpServletRequest request, HttpServletResponse resp, HttpSession session1) {
+    public String getMockInfoContent(HttpServletRequest request) {
         String url = request.getRequestURI().toString();
         String content = "";
         if (url.startsWith("/mock/mock/content")) {
-            String path = url.substring("/mock/mock/content/".length(), url.length());
-            MockInfo mockInfo = mockService.getMockByUrl(path);
+            String uri = url.substring("/mock/mock/content/".length(), url.length());
+            MockInfo mockInfo = mockService.getMockByUri(uri);
             content = mockInfo.getContent();
         }
         return content;
@@ -54,14 +53,34 @@ public class MockController extends BaseController {
 
     @RequestMapping("/getMockInfo")
     @ResponseBody
-    public MockInfo getMockInfo(@RequestParam String path) {
-        MockInfo mockInfo = mockService.getMockByUrl(path);
+    public MockInfo getMockInfo(@RequestParam String url) {
+        MockInfo mockInfo = mockService.getMockByUri(url);
         return mockInfo;
     }
 
     @RequestMapping("/update")
+    public ModelAndView updateMockInfo(@RequestParam(defaultValue = "", required = false) String url) {
+        ModelAndView modelAndView = new ModelAndView("updateMock");
+        MockInfo mockInfo = mockService.getMockByUri(url);
+        modelAndView.addObject("mock", mockInfo);
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/doUpdate")
     @ResponseBody
-    public String updateMockInfo(@RequestParam String path, @RequestParam String content) {
-        return "";
+    public BaseResult updateMockInfo(@RequestParam String url, @RequestParam String content) {
+        MockInfo mockInfo = new MockInfo();
+        mockInfo.setUrl(url);
+        mockInfo.setContent(content);
+        int code = mockService.updateMock(mockInfo) ? 0 : 1;
+        return createResult(code, null);
+    }
+
+    @RequestMapping("/delete")
+    @ResponseBody
+    public BaseResult deleteMockInfo(@RequestParam String url) {
+        int code = mockService.deleteMock(url) ? 0 : 1;
+        return createResult(code, null);
     }
 }

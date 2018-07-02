@@ -16,11 +16,11 @@ import java.util.List;
  */
 @Service
 public class MockService {
-
-    public List<MockInfo> getMockListByUsername(String username) {
-        return getMockList();
-    }
-
+    /**
+     * 得到所有的mock数据列表
+     *
+     * @return 本地的mock数据列表
+     */
     public List<MockInfo> getMockList() {
         List<MockInfo> mockInfos = new ArrayList<MockInfo>();
         List<String> files = FileUtil.getMockFileList(Config.ROOT_DIR + File.separator + "server");
@@ -30,8 +30,9 @@ public class MockService {
 
         int i = 0;
         for (String filePath : files) {
-            File file = new File(filePath);
-            MockInfo mockInfo = parseMock(filePath);
+            String baseDir = Config.ROOT_DIR + File.separator + "server";
+            String path = filePath.substring(baseDir.length() + 1, filePath.length());
+            MockInfo mockInfo = parseMock(path);
             if (mockInfo != null) {
                 mockInfos.add(mockInfo);
             }
@@ -40,15 +41,43 @@ public class MockService {
     }
 
     /**
-     * 获取mock数据
+     * 得到相似的mock数据
      *
-     * @param filePath 文件路径
-     * @return mock数据
+     * @param uri mock的uri
+     * @return 和uri相似的mock数据列表
      */
-    public MockInfo getMockByUrl(String filePath) {
-        return parseMock(filePath);
+    public List<MockInfo> getMockList(String uri) {
+        List<MockInfo> mockInfos = getMockList();
+        List<MockInfo> resultList = new ArrayList<MockInfo>();
+        if (uri == null || uri.length() == 0) {
+            resultList = mockInfos;
+        } else {
+            for(MockInfo mockInfo: mockInfos) {
+                if (mockInfo != null && mockInfo.getUrl().contains(uri)) {
+                    resultList.add(mockInfo);
+                }
+            }
+        }
+
+        return resultList;
     }
 
+    /**
+     * 获取mock数据
+     *
+     * @param uri 文件路径
+     * @return mock数据
+     */
+    public MockInfo getMockByUri(String uri) {
+        return parseMockByUri(uri);
+    }
+
+    /**
+     * 更新本地mock
+     *
+     * @param mockInfo mock数据
+     * @return 是否更新成功
+     */
     public boolean updateMock(MockInfo mockInfo) {
         if (mockInfo == null) {
             return false;
@@ -58,21 +87,52 @@ public class MockService {
         return FileUtil.writeFile(path, mockInfo.getContent());
     }
 
-    private MockInfo parseMock(String filePath) {
-        if (filePath == null) {
-            return null;
+    public boolean deleteMock(String uri) {
+        if (uri == null || uri.length() == 0) {
+            return false;
         }
 
+        String path = uri.replaceAll("/", "_");
+        return new File(getLocalPath(path)).delete();
+    }
+
+    private MockInfo parseMockByUri(String uri) {
+        if (uri == null || uri.length() == 0) {
+            return new MockInfo();
+        }
+
+        return parseMock(uri.replaceAll("/", "_"));
+    }
+
+    /**
+     * 根据mock的uri，获取本地mock数据
+     *
+     * @param path  uri转path
+     * @return mock数据
+     */
+    private MockInfo parseMock(String path) {
+        if (path == null || path.length() == 0) {
+            return new MockInfo();
+        }
+
+        String url = path.replaceAll("_", "/");
+        System.out.println("parseMock path=" + path + ", url=" + url);
         MockInfo mockInfo = new MockInfo();
-        String path = Config.ROOT_DIR + File.separator + "server" + File.separator + filePath;
         mockInfo.setId(0);
-        mockInfo.setUrl(filePath.replaceAll("_", "/"));
-        mockInfo.setContent(FileUtil.readFile(path));
-        mockInfo.setPath(filePath);
+        mockInfo.setUrl(url);
+        mockInfo.setContent(FileUtil.readFile(getLocalPath(path)));
+        mockInfo.setPath(path);
         mockInfo.setUsername("");
 
         return mockInfo;
     }
 
+    private String getLocalPath(String path) {
+        String localPath = "";
+        if (path != null) {
+            localPath = Config.ROOT_DIR + File.separator + "server" + File.separator + path;
+        }
 
+        return localPath;
+    }
 }
