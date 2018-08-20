@@ -62,7 +62,7 @@
                     <td class="mockUrl">${mock.path}</td>
                     <td class="change">
                         <a target="_blank" href="./mock/update?url=${mock.url}">编辑</a>
-                        <a target="_blank" href="">删除</a>
+                        <a target="_blank" href="###" onclick="deleteMock(${mock.url})">删除</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -78,8 +78,10 @@
         function deleteMock(id) {
             alert(id);
             var url = "./mock/deleteMock?url=" + id;
-            $.get(url, function () {
-
+            $.get(url, function (e) {
+                if (e !== null && e.code == 0) {
+                    alert("删除成功");
+                }
             });
         }
         $(document).ready(function () {

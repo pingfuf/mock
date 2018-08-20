@@ -1,5 +1,6 @@
 package com.pf.mock.controller;
 
+import com.pf.mock.dao.MockDao;
 import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.MockInfo;
 import com.pf.mock.service.MockService;
@@ -48,6 +49,9 @@ public class MockController extends BaseController {
             MockInfo mockInfo = mockService.getMockByUri(uri);
             content = mockInfo.getContent();
         }
+        if (content.length() == 0) {
+            content = url;
+        }
         return content;
     }
 
@@ -70,9 +74,14 @@ public class MockController extends BaseController {
     @RequestMapping("/doUpdate")
     @ResponseBody
     public BaseResult updateMockInfo(@RequestParam String url, @RequestParam String content) {
+        if (url == null) {
+            return createResult(-1, null);
+        }
+
         MockInfo mockInfo = new MockInfo();
         mockInfo.setUrl(url);
         mockInfo.setContent(content);
+        mockInfo.setPath(url.replaceAll("/", "_"));
         int code = mockService.updateMock(mockInfo) ? 0 : 1;
         return createResult(code, null);
     }
@@ -82,5 +91,21 @@ public class MockController extends BaseController {
     public BaseResult deleteMockInfo(@RequestParam String url) {
         int code = mockService.deleteMock(url) ? 0 : 1;
         return createResult(code, null);
+    }
+
+    @RequestMapping("/userAgent")
+    public ModelAndView tempUserAgent() {
+        ModelAndView modelAndView = new ModelAndView("userAgent");
+
+        return modelAndView;
+    }
+
+    @RequestMapping("/temp")
+    @ResponseBody
+    public BaseResult temp(HttpServletRequest request) {
+        MockDao mockDao = new MockDao();
+        List<MockInfo> mockInfos = mockDao.getMockByUrl("ee3");
+
+        return createResult(0, mockInfos);
     }
 }

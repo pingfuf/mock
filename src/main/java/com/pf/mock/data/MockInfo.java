@@ -1,18 +1,25 @@
 package com.pf.mock.data;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Created by fupingfu on 2017/7/28.
  */
 public class MockInfo implements Serializable {
     private static final long serialVersionUID = 10l;
+    public static final String ID = "id";
+    public static final String USERNAME = "username";
+    public static final String URL = "url";
+    public static final String PATH = "path";
+    public static final String PARAMS = "params";
 
     private int id;
     private String username;
     private String url;
     private String path;
     private String content;
+    private Map<String, Object> params;
 
     public int getId() {
         return id;
@@ -52,5 +59,13 @@ public class MockInfo implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 }

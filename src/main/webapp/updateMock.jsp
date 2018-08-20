@@ -41,15 +41,20 @@
             height:800px;
             width:1000px;
             border:1px solid;
+            font-size: 15px;
         }
     </style>
 </head>
 
 <body>
     <script language="JavaScript">
+        function repeat(s, count) {
+            return new Array(count + 1).join(s);
+        }
+
         $(document).ready(function () {
-            var text = $("#mockContent").text();
-            if ( text!= null && text.length > 0) {
+            var json = $("#mockContent").val();
+            if ( json !== null && json.length > 0) {
                 var i           = 0;
                 var len          = 0;
                 var tab         = "    ";
@@ -58,7 +63,7 @@
                 var inString    = false;
                 var currentChar = null;
                 for (i = 0, len = json.length; i < len; i += 1) {
-                    var currentChar = json.charAt(i);
+                    currentChar = json.charAt(i);
 
                     switch (currentChar) {
                         case '{':
@@ -112,15 +117,32 @@
                     }
                 }
 
-                $("#mockContent").val(targetJson)
+                $("#mockContent").val(targetJson);
+                $("#add").val("更新");
             }
-
 
             $("#add").click(function () {
                 var url = $("#mockName").val();
-                var content = $("#content").val();
+                var content = $("#mockContent").val();
+                if (url === null || url.length === 0 || content === null || content.length === 0) {
+                    alert("请输入正确的mock数据");
+                    return;
+                }
 
-                $.post("")
+                if (url.startsWith("/", 0)) {
+                    url = url.substring(1, content.length);
+                }
+
+                $.post("./mock/doUpdate",{
+                    url: url,
+                    content: content
+                }, function (e) {
+                    if (e !== null && e.code === 0) {
+                        alert("保存成功");
+                    } else {
+                        alert("保存失败");
+                    }
+                });
             });
         });
     </script>
@@ -129,6 +151,7 @@
             <label>接口URI:</label>
             <input id="mockName" name="url" class="mockName" value="${mock.url}" type="text" />
             <input id="add" class="button" type="button" value="添加" />
+            <input id="format" class="button" type="button" value="格式化Mock">
         </div>
         <textarea id="mockContent" name="content" class="iframe">${mock.content}</textarea>
     </div>
