@@ -24,7 +24,7 @@ public class MockController extends BaseController {
     @RequestMapping("/getMockList")
     @ResponseBody
     public List<MockInfo> getMockList() {
-        return mockService.getMockList();
+        return mockService.getMockList(0);
     }
 
     @RequestMapping("/showMockList")

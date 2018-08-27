@@ -45,7 +45,21 @@ public class Config {
         String path = "/Users/pingfu/mock";
         File file = new File(path);
         if (!file.canRead()) {
-            path = "F:\\mock";
+            path = "D:\\mock";
+        }
+
+        return path;
+    }
+
+    public static String getDatabaseUrl() {
+        return ROOT_DIR + File.separator + "mock.db";
+    }
+
+    public static String getResourceDir() {
+        String path = ROOT_DIR + File.separator + "res";
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdirs();
         }
 
         return path;

@@ -16,28 +16,15 @@ import java.util.List;
  */
 @Service
 public class MockService {
+    private MockDao mockDao = new MockDao();
+
     /**
      * 得到所有的mock数据列表
      *
      * @return 本地的mock数据列表
      */
-    public List<MockInfo> getMockList() {
-        List<MockInfo> mockInfos = new ArrayList<MockInfo>();
-        List<String> files = FileUtil.getMockFileList(Config.ROOT_DIR + File.separator + "server");
-        if (files == null || files.size() == 0) {
-            return mockInfos;
-        }
-
-        int i = 0;
-        for (String filePath : files) {
-            String baseDir = Config.ROOT_DIR + File.separator + "server";
-            String path = filePath.substring(baseDir.length() + 1, filePath.length());
-            MockInfo mockInfo = parseMock(path);
-            if (mockInfo != null) {
-                mockInfos.add(mockInfo);
-            }
-        }
-        return mockInfos;
+    public List<MockInfo> getMockList(int page) {
+        return mockDao.getMockList(page);
     }
 
     /**
@@ -47,19 +34,7 @@ public class MockService {
      * @return 和uri相似的mock数据列表
      */
     public List<MockInfo> getMockList(String uri) {
-        List<MockInfo> mockInfos = getMockList();
-        List<MockInfo> resultList = new ArrayList<MockInfo>();
-        if (uri == null || uri.length() == 0) {
-            resultList = mockInfos;
-        } else {
-            for(MockInfo mockInfo: mockInfos) {
-                if (mockInfo != null && mockInfo.getUrl().contains(uri)) {
-                    resultList.add(mockInfo);
-                }
-            }
-        }
-
-        return resultList;
+        return mockDao.getMockByUrl(uri);
     }
 
     /**
@@ -70,6 +45,10 @@ public class MockService {
      */
     public MockInfo getMockByUri(String uri) {
         return parseMockByUri(uri);
+    }
+
+    public MockInfo getMockByUriAndParams(String uri, String prams) {
+        return null;
     }
 
     /**

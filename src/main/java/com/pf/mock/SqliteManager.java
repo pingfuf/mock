@@ -5,29 +5,18 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
-import javax.sql.DataSource;
 import java.io.File;
-import java.sql.SQLException;
 
 public class SqliteManager {
     private static SqliteManager mInstance = new SqliteManager();
     private JdbcTemplate jdbcTemplate;
     private SqliteManager() {
-//        jdbcTemplate = new JdbcTemplate();
-        try {
-            System.out.println("jdbc:sqlite:" + getUrl());
-            DriverManagerDataSource dataSource = new SingleConnectionDataSource();
-            dataSource.setDriverClassName("org.sqlite.JDBC");
-            dataSource.setUrl("jdbc:sqlite:" + getUrl());
-//            dataSource.setAutoCommit(true);
-//            dataSource.setSuppressClose(true);
-//            dataSource.setAutoCommit(true);
-//            dataSource.setLoginTimeout(1000);
-            jdbcTemplate = new JdbcTemplate();
-            jdbcTemplate.setDataSource(dataSource);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("jdbc:sqlite:" + getUrl());
+        DriverManagerDataSource dataSource = new SingleConnectionDataSource();
+        dataSource.setDriverClassName("org.sqlite.JDBC");
+        dataSource.setUrl("jdbc:sqlite:" + getUrl());
+        jdbcTemplate = new JdbcTemplate();
+        jdbcTemplate.setDataSource(dataSource);
     }
 
     public static SqliteManager getInstance() {
