@@ -52,33 +52,29 @@
 
 </head>
 <body>
-    <div id="container">
-        <H1 style="margin-top: 30px; text-align: center">Mock服务</H1>
+<div id="container">
+    <H1 style="margin-top: 30px; text-align: center">Mock服务</H1>
 
-        <table id="table">
-            <tr class="line">
-                <td class="menu">Mock项目</td>
-                <td class="item">
-                    <a href="./mock/showMockList" target="_blank">查看mock接口列表</a>
-                </td>
-                <td class="item">
-                    <a href="./updateMock.jsp" target="_blank">添加Mock</a>
-                </td>
-                <td class="item">b</td>
-                <td class="item">c</td>
-            </tr>
-            <tr class="line">
-                <td class="menu">资源包</td>
-                <td class="item">
-                    <a href="./updateFile.jsp" target="_blank">上传文件</a>
-                </td>
-                <td class="item">
-                    <a href="./file/fileList" target="_blank">文件列表</a>
-                </td>
-                <td class="item">H5包下载</td>
-                <td class="item">c</td>
-            </tr>
-        </table>
-    </div>
+    <table id="table">
+        <tr class="line">
+            <td class="menu">Mock项目</td>
+            <td class="item">
+                <a href="./mock/showMockList" target="_blank">查看mock接口列表</a>
+            </td>
+            <td class="item">
+                <a href="./updateMock.jsp" target="_blank">添加Mock</a>
+            </td>
+            <td class="item">b</td>
+            <td class="item">c</td>
+        </tr>
+        <tr class="line">
+            <td class="menu">资源包</td>
+            <td class="item">安装包上传</td>
+            <td class="item">安装包下载</td>
+            <td class="item">H5包下载</td>
+            <td class="item">c</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>

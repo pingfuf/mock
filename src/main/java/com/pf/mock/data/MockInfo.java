@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by fupingfu on 2017/7/28.
  */
 public class MockInfo implements Serializable {
-    private static final long serialVersionUID = 10l;
+    private static final long serialVersionUID = 101L;
     public static final String ID = "id";
     public static final String USERNAME = "username";
     public static final String URL = "url";

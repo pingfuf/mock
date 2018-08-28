@@ -34,8 +34,8 @@
             width: 320px;
         }
         .button {
-            height: 50px;
-            width: 80px;
+            height: 30px;
+            width: 160px;
         }
         #mockContent {
             height:800px;
@@ -151,7 +151,11 @@
             <label>接口URI:</label>
             <input id="mockName" name="url" class="mockName" value="${mock.url}" type="text" />
             <input id="add" class="button" type="button" value="添加" />
-            <input id="format" class="button" type="button" value="格式化Mock">
+            <input id="format" class="button" type="button" value="格式化DocLevel数据">
+        </div>
+
+        <div>
+            <label>用户名：</label>
         </div>
         <textarea id="mockContent" name="content" class="iframe">${mock.content}</textarea>
     </div>

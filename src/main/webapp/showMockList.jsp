@@ -34,7 +34,7 @@
             width: 320px;
         }
         .button {
-            height: 50px;
+            height: 30px;
             width: 80px;
         }
         .iframe {

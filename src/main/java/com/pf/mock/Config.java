@@ -64,4 +64,14 @@ public class Config {
 
         return path;
     }
+
+    public static boolean isDebug() {
+        String path = "/Users/pingfu/mock";
+        File file = new File(path);
+        if (!file.canRead()) {
+            return false;
+        }
+
+        return true;
+    }
 }

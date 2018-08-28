@@ -23,19 +23,17 @@
             margin-left: auto;
             margin-right: auto;
         }
-        #top {
-            margin-top: 40px;
-            margin-bottom: 30px;
-            width: 960px;
-        }
+
         .mockName {
             height: 40px;
             width: 400px;
         }
+
         .mockUser {
             height: 40px;
             width: 120px;
         }
+
         .mockUrl {
             height: 40px;
             width: 480px;
