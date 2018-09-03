@@ -10,7 +10,7 @@
     <properties>
         <spring.version>4.2.0.RELEASE</spring.version>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
