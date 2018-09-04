@@ -1,6 +1,8 @@
 package com.pf.mock;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by fupingfu on 2017/7/27.
@@ -11,6 +13,8 @@ public class Config {
     public static final String BASE_DIR = "data";
 
     public static final String ROOT_DIR = initMockPath();
+
+    public static String serverIp;
 
     /**
      * 得到数据的根路径
@@ -73,5 +77,28 @@ public class Config {
         }
 
         return true;
+    }
+
+    public static String getServerIp() {
+        if (serverIp == null) {
+            try {
+                InetAddress address = InetAddress.getLocalHost();
+                serverIp = address.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return serverIp;
+    }
+
+    public static String getServerUrl() {
+        String url = "http://" + getServerIp();
+        if (isDebug()) {
+            url = url + ":8080";
+        }
+        url = url + "/mock";
+
+        return url;
     }
 }

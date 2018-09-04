@@ -23,6 +23,7 @@
             width: 1200px;
             margin-left: auto;
             margin-right: auto;
+            text-align: center;
         }
 
         .mockName {
@@ -47,17 +48,20 @@
 </head>
 <body>
 <div id="container">
-    <label>文件名称：</label>
+    <label style="margin-right: auto;margin-left: auto;margin-top: 50px">文件名称：</label>
     <label>${file.name}</label>
+    <br>
+    <label>文件类型：</label>
+    <label>${file.typeName}</label>
     <br>
     <label>创建时间：</label>
     <label>${file.date}</label>
     <br>
-    <label>下载地址</label>
+    <label>下载地址：</label>
     <label id="url">${url}</label>
     <br>
     <label>二维码</label><br>
-    <div id="qrcode" style="width:200px; height:200px; margin-top:15px;"></div>
+    <div id="qrcode" style="width:200px; height:200px; margin-top:15px;margin-left: auto;margin-right: auto"></div>
 </div>
 
 <script language="JavaScript">

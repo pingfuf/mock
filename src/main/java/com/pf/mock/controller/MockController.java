@@ -1,10 +1,12 @@
 package com.pf.mock.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.pf.mock.dao.MockDao;
 import com.pf.mock.data.BaseResult;
 import com.pf.mock.data.MockInfo;
 import com.pf.mock.service.MockService;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,29 +25,33 @@ public class MockController extends BaseController {
 
     @RequestMapping("/getMockList")
     @ResponseBody
-    public List<MockInfo> getMockList() {
-        return mockService.getMockList(0);
+    public List<MockInfo> getMockList(@RequestParam(defaultValue = "0") int page) {
+        return mockService.getMockList(page);
     }
 
-    @RequestMapping("/showMockList")
-    public String showMockList() {
-        return "showMockList";
-    }
-
-    @RequestMapping("showMockListInfo")
-    public ModelAndView showMockListInfo(@RequestParam(defaultValue = "") String mockName ) {
+    @RequestMapping("showMockList")
+    public ModelAndView showMockList(@RequestParam(defaultValue = "") String url, @RequestParam(defaultValue = "0") int page) {
         ModelAndView modelAndView = new ModelAndView("mockList");
-        modelAndView.addObject("mockList", mockService.getMockList(mockName));
+        List<MockInfo> mockInfos = mockService.getMockList(url, page);
+        modelAndView.addObject("mockList", mockInfos);
+        int size = mockInfos != null ? mockInfos.size() : 0;
+        int pageSize = size / MockDao.PAGE_SIZE;
+        if (size % MockDao.PAGE_SIZE != 0) {
+            pageSize = pageSize + 1;
+        }
+
+        modelAndView.addObject("pageSize", pageSize);
+        modelAndView.addObject("currentPage", page + 1);
         return modelAndView;
     }
 
-    @RequestMapping("/content/**")
+    @RequestMapping("/getMock/**")
     @ResponseBody
     public String getMockInfoContent(HttpServletRequest request) {
         String url = request.getRequestURI().toString();
         String content = "";
-        if (url.startsWith("/mock/mock/content")) {
-            String uri = url.substring("/mock/mock/content/".length(), url.length());
+        if (url.startsWith("/mock/mock/getMock")) {
+            String uri = url.substring("/mock/mock/getMock/".length(), url.length());
             MockInfo mockInfo = mockService.getMockByUri(uri);
             content = mockInfo.getContent();
         }
@@ -73,16 +79,32 @@ public class MockController extends BaseController {
 
     @RequestMapping("/doUpdate")
     @ResponseBody
-    public BaseResult updateMockInfo(@RequestParam String url, @RequestParam String content) {
+    public BaseResult updateMockInfo(@RequestParam String url,
+                                     @RequestParam(required = false, defaultValue = "0")int id,
+                                     @RequestParam(required = false, defaultValue = "")String username,
+                                     @RequestParam(required = false, defaultValue = "")String params,
+                                     @RequestParam String content) {
         if (url == null) {
             return createResult(-1, null);
         }
 
         MockInfo mockInfo = new MockInfo();
+        mockInfo.setId(id);
         mockInfo.setUrl(url);
         mockInfo.setContent(content);
-        mockInfo.setPath(url.replaceAll("/", "_"));
-        int code = mockService.updateMock(mockInfo) ? 0 : 1;
+        mockInfo.setUsername(username);
+        if (params != null && params.length() > 0) {
+            Map<String, Object> paramMap = JSON.parseObject(params);
+            mockInfo.setParams(paramMap);
+        }
+
+        int code = -1;
+        if (mockService.hasMockExisted(mockInfo)) {
+            code = mockService.updateMock(mockInfo) ? 0 : 1;
+        } else {
+            code = mockService.addMock(mockInfo) ? 0 : 1;
+        }
+
         return createResult(code, null);
     }
 
@@ -104,7 +126,7 @@ public class MockController extends BaseController {
     @ResponseBody
     public BaseResult temp(HttpServletRequest request) {
         MockDao mockDao = new MockDao();
-        List<MockInfo> mockInfos = mockDao.getMockByUrl("ee3");
+        List<MockInfo> mockInfos = mockDao.getMockByUrl("ee3", 0);
 
         return createResult(0, mockInfos);
     }

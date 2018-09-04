@@ -25,8 +25,6 @@
         }
         #top {
             margin-top: 40px;
-            margin-bottom: 30px;
-            margin-left: 10px;
             width: 960px;
         }
         .mockName {
@@ -42,6 +40,7 @@
             width:1000px;
             border:1px solid;
             font-size: 15px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -119,10 +118,13 @@
 
                 $("#mockContent").val(targetJson);
                 $("#add").val("更新");
+            } else {
+
             }
 
             $("#add").click(function () {
                 var url = $("#mockName").val();
+                var username = $("#username").val();
                 var content = $("#mockContent").val();
                 if (url === null || url.length === 0 || content === null || content.length === 0) {
                     alert("请输入正确的mock数据");
@@ -135,6 +137,8 @@
 
                 $.post("./mock/doUpdate",{
                     url: url,
+                    username: username,
+                    params: '',
                     content: content
                 }, function (e) {
                     if (e !== null && e.code === 0) {
@@ -155,7 +159,34 @@
         </div>
 
         <div>
-            <label>用户名：</label>
+            <div style="margin-top: 10px">
+                <label>用户名：</label>
+                <input id="username" type="text" name="username" value="${mock.username}">
+            </div>
+
+            <div style="margin-top: 10px">
+                <label>请求参数：</label>
+                <div style="margin-top: 5px">
+                    <label>名称：</label>
+                    <input id="defaultParamKey" class="key" type="text" value="${param.key}">
+                    <label style="margin-left: 20px">参数值：</label>
+                    <input class="value" type="text" value="${param.value}">
+                </div>
+            </div>
+
+            <div id="param">
+                <c:forEach items="${params}" var="param" varStatus="status">
+                    <div class="paramItem">
+                        参数名称：<input class="key" type="text" value="${param.key}">
+                        <label style="margin-left: 20px">参数值：</label><input class="value" type="text" value="${param.value}">
+                        <label>${status.index}</label>
+                    </div>
+
+                    <c:if test="${status.index} % 3 == 2">
+                        <br>
+                    </c:if>
+                </c:forEach>
+            </div>
         </div>
         <textarea id="mockContent" name="content" class="iframe">${mock.content}</textarea>
     </div>

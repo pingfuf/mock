@@ -27,14 +27,18 @@ public class MockService {
         return mockDao.getMockList(page);
     }
 
+    public int getMockSize() {
+        return mockDao.getMockSize();
+    }
+
     /**
      * 得到相似的mock数据
      *
      * @param uri mock的uri
      * @return 和uri相似的mock数据列表
      */
-    public List<MockInfo> getMockList(String uri) {
-        return mockDao.getMockByUrl(uri);
+    public List<MockInfo> getMockList(String uri, int page) {
+        return mockDao.getMockByUrl(uri, page);
     }
 
     /**
@@ -58,12 +62,15 @@ public class MockService {
      * @return 是否更新成功
      */
     public boolean updateMock(MockInfo mockInfo) {
-        if (mockInfo == null) {
-            return false;
-        }
+        return mockDao.updateMock(mockInfo);
+    }
 
-        String path = Config.ROOT_DIR + File.separator + "server" + File.separator + mockInfo.getPath();
-        return FileUtil.writeFile(path, mockInfo.getContent());
+    public boolean addMock(MockInfo mockInfo) {
+        return mockDao.addMock(mockInfo);
+    }
+
+    public boolean hasMockExisted(MockInfo mockInfo) {
+        return mockDao.hasMockExisted(mockInfo);
     }
 
     public boolean deleteMock(String uri) {

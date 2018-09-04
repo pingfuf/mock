@@ -60,7 +60,7 @@
                 <td class="mockUrl">${res.date}</td>
                 <td class="change">
                     <a target="_blank" href="./file/downloadInfo?id=${res.id}">下载</a>
-                    <a target="_blank" href="###" onclick="deleteMock(${res.id})">删除</a>
+                    <a target="_blank" href="#" onclick="deleteMock(${res.id})">删除</a>
                 </td>
             </tr>
         </c:forEach>
@@ -70,7 +70,7 @@
     function deleteMock(id) {
         var url = "./file/deleteFile?id=" + id;
         $.get(url, function (e) {
-            if (e !== null && e.code == 0) {
+            if (e !== null && e.code === 0) {
                 alert("删除成功");
             }
         });

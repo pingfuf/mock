@@ -14,7 +14,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <base href="<%=basePath %>" />
-    <script src="./static/js/jquery.min.js" ></script>
     <title>首页</title>
 
     <style type="text/css">
@@ -44,12 +43,6 @@
         }
     </style>
 
-    <script language="JavaScript">
-        $(document).read(function() {
-
-        });
-    </script>
-
 </head>
 <body>
     <div id="container">
@@ -59,7 +52,7 @@
             <tr class="line">
                 <td class="menu">Mock项目</td>
                 <td class="item">
-                    <a href="./mock/showMockList" target="_blank">查看mock接口列表</a>
+                    <a href="./showMockList.jsp" target="_blank">mock列表</a>
                 </td>
                 <td class="item">
                     <a href="./updateMock.jsp" target="_blank">添加Mock</a>

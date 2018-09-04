@@ -3,6 +3,7 @@ package com.pf.mock.controller;
 import com.alibaba.fastjson.JSON;
 import com.pf.mock.Config;
 import com.pf.mock.data.ResInfo;
+import com.pf.mock.data.ResResult;
 import com.pf.mock.service.ResService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by fupingfu on 2017/9/7.
@@ -38,7 +41,20 @@ public class FileController extends BaseController {
     @ResponseBody
     public String getLatestRes(@RequestParam int type) {
         ResInfo resInfo = mService.getLatestRes(type);
-        return JSON.toJSONString(createResult(0, resInfo));
+        ResResult resResult = new ResResult();
+        if (resInfo != null) {
+            String url = Config.getServerUrl() + "/file/downloadFile?id=" + resInfo.getId();
+            resResult.setUrl(url);
+            resResult.setResInfo(resInfo);
+        }
+        return JSON.toJSONString(createResult(0, resResult));
+    }
+
+    @RequestMapping("/deleteFile")
+    @ResponseBody
+    public String deleteFile(int id) {
+        mService.deleteRes(id);
+        return "";
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -59,11 +75,31 @@ public class FileController extends BaseController {
             // 写文件到服务器
             File serverFile = new File(Config.getResourceDir() + File.separator + fileName);
             file.transferTo(serverFile);
-            mService.insertRes(type, date, fileName);
+            mService.insertRes(type, fileName, date);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "{}";
+    }
+
+    @RequestMapping("/getResList")
+    @ResponseBody
+    public String getResList(@RequestParam int type) {
+        List<ResInfo> resInfos = mService.getResList(type);
+        List<ResResult> list = new ArrayList<ResResult>();
+        if (resInfos != null && resInfos.size() > 0) {
+            for (ResInfo resInfo : resInfos) {
+                ResResult resResult = new ResResult();
+                if (resInfo != null) {
+                    String url = Config.getServerUrl() + "/file/downloadFile?id=" + resInfo.getId();
+                    resResult.setUrl(url);
+                    resResult.setResInfo(resInfo);
+                }
+                list.add(resResult);
+            }
+        }
+
+        return JSON.toJSONString(createResult(0, list));
     }
 
     @RequestMapping("/download")
@@ -105,28 +141,10 @@ public class FileController extends BaseController {
         ModelAndView modelAndView = new ModelAndView("downloadFile");
         ResInfo resInfo = mService.getResInfoById(id);
         modelAndView.addObject("file", resInfo);
-        String ip = null;
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-            ip = address.getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        //返回IP地址
-        String url = "http://" + ip;
-        if (Config.isDebug()) {
-            url = url + ":8080";
-        }
-        url = url + "/mock/file/downloadFile?id=" + id;
+
+        String url = Config.getServerUrl() + "/file/downloadFile?id=" + id;
         modelAndView.addObject("url", url);
         return modelAndView;
-    }
-
-    @RequestMapping("/deleteFile")
-    @ResponseBody
-    public String deleteFile(int id) {
-        mService.deleteRes(id);
-        return "";
     }
 
     private File getResponseFile(int type) {

@@ -4,6 +4,7 @@ import com.pf.mock.dao.ResDao;
 import com.pf.mock.data.ResInfo;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -13,8 +14,8 @@ import java.util.List;
 public class ResService {
     private ResDao resDao = new ResDao();
 
-    public void insertRes(int type, String date, String name) {
-        resDao.insertRes(type, date, name);
+    public void insertRes(int type, String name, String date) {
+        resDao.insertRes(type, name, date);
     }
 
     public List<ResInfo> getResList(int type) {
@@ -34,6 +35,11 @@ public class ResService {
     }
 
     public void deleteRes(int id) {
+        ResInfo resInfo = resDao.getResById(id);
+        if (resInfo != null && resInfo.getPath() != null) {
+            File file = new File(resInfo.getPath());
+            file.delete();
+        }
         resDao.deleteRes(id);
     }
 }

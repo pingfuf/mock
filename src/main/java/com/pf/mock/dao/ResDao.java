@@ -40,10 +40,10 @@ public class ResDao {
         return parseResList(maps);
     }
 
-    public void insertRes(int type, String date, String fileName) {
-        String sql = "insert into tb_res(type, date, path, name) values(%s, \"%s\", \"%s\", \"%s\")";
+    public void insertRes(int type, String fileName, String date) {
+        String sql = "insert into tb_res(type, name, date, path) values(%s, \"%s\", \"%s\", \"%s\")";
         String filePath = Config.getResourceDir() + File.separator + fileName;
-        sql = String.format(sql, type, date, filePath, fileName);
+        sql = String.format(sql, type, fileName, date, filePath);
         mJdbcTemplate.execute(sql);
     }
 
@@ -80,10 +80,11 @@ public class ResDao {
         ResInfo resInfo = new ResInfo();
         resInfo.setId(Integer.valueOf(map.get("id").toString()));
         resInfo.setType(Integer.valueOf(map.get("type").toString()));
+        resInfo.setName(String.valueOf(map.get("name")));
         resInfo.setDate(String.valueOf(map.get("date")));
         resInfo.setPath(String.valueOf(map.get("path")));
-        resInfo.setName(String.valueOf(map.get("name")));
         resInfo.setTypeName(getTypeName(resInfo.getType()));
+
         return resInfo;
     }
 
