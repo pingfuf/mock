@@ -70,8 +70,8 @@
                     <td class="mockUser">${mock.username}</td>
                     <td class="mockUrl">${mock.path}</td>
                     <td class="change">
-                        <a target="_blank" href="./mock/update?url=${mock.url}">编辑</a>
-                        <a target="_blank" href="###" onclick="deleteMock(${mock.url})">删除</a>
+                        <a target="_blank" href="./mock/update?id=${mock.id}">编辑</a>
+                        <a target="_blank" href="###" onclick="deleteMock(${mock.id})">删除</a>
                     </td>
                 </tr>
             </c:forEach>

@@ -53,7 +53,7 @@
 
         $(document).ready(function () {
             var json = $("#mockContent").val();
-            if ( json !== null && json.length > 0) {
+            if (json !== null && json.length > 0) {
                 var i           = 0;
                 var len          = 0;
                 var tab         = "    ";
@@ -117,15 +117,20 @@
                 }
 
                 $("#mockContent").val(targetJson);
+            }
+
+            var id = $("#mockId").val();
+            if (id !== null && id.length > 0) {
                 $("#add").val("更新");
             } else {
-
+                id = 0;
             }
 
             $("#add").click(function () {
                 var url = $("#mockName").val();
                 var username = $("#username").val();
                 var content = $("#mockContent").val();
+                var path = $("#path").val();
                 if (url === null || url.length === 0 || content === null || content.length === 0) {
                     alert("请输入正确的mock数据");
                     return;
@@ -136,10 +141,12 @@
                 }
 
                 $.post("./mock/doUpdate",{
+                    id: id,
                     url: url,
                     username: username,
-                    params: '',
-                    content: content
+                    params: getParams(),
+                    content: content,
+                    path: path
                 }, function (e) {
                     if (e !== null && e.code === 0) {
                         alert("保存成功");
@@ -148,7 +155,41 @@
                     }
                 });
             });
+            if ($(".paramItem").size() > 0) {
+                $("#defaultParam").hide();
+            }
         });
+
+        function getParams() {
+            var params = '{';
+            var defaultKey = $("#defaultParamKey").val();
+            var defaultValue = $("#defaultParamValue").val();
+            var hasDefaultValue = false;
+            if (defaultKey !== null && defaultKey.toString().length > 0
+                && defaultValue !== null && defaultValue.toString().length > 0) {
+                params += '"' + defaultKey + '":' + '"' + defaultValue + '"';
+                hasDefaultValue = true;
+            }
+            var $keys = $(".key");
+            var $values = $(".value");
+            if ($keys.size() > 0) {
+                var num = 0;
+                for (var i = 0; i < $keys.size; i ++) {
+                    var key = $keys.eq(i).val();
+                    var value = $values.eq(i).val();
+                    if (key !== null && key.toString().length > 0 && value !== null) {
+                        if (num === 0 && hasDefaultValue) {
+                            params += ',';
+                        }
+                        params += '"' + key + '":' + '"' + value + '"';
+                        num ++;
+                    }
+                }
+            }
+            params += "}";
+
+            return params;
+        }
     </script>
     <div id="container">
         <div id="top">
@@ -156,6 +197,8 @@
             <input id="mockName" name="url" class="mockName" value="${mock.url}" type="text" />
             <input id="add" class="button" type="button" value="添加" />
             <input id="format" class="button" type="button" value="格式化DocLevel数据">
+            <input id="mockId" type="hidden" value="${mock.id}">
+            <input id="path" type="hidden" value="${mock.path}">
         </div>
 
         <div>
@@ -164,27 +207,21 @@
                 <input id="username" type="text" name="username" value="${mock.username}">
             </div>
 
-            <div style="margin-top: 10px">
-                <label>请求参数：</label>
-                <div style="margin-top: 5px">
-                    <label>名称：</label>
-                    <input id="defaultParamKey" class="key" type="text" value="${param.key}">
-                    <label style="margin-left: 20px">参数值：</label>
-                    <input class="value" type="text" value="${param.value}">
-                </div>
+            <label style="margin-top: 20px">请求参数：</label><br>
+            <div id="defaultParam" style="margin-top: 5px">
+                <label>参数名称：</label>
+                <input id="defaultParamKey" type="text" value="">
+                <label style="margin-left: 20px">参数值：</label>
+                <input id="defaultParamValue" type="text" value="">
             </div>
-
             <div id="param">
-                <c:forEach items="${params}" var="param" varStatus="status">
+                <c:forEach items="${paramList}" var="param">
                     <div class="paramItem">
-                        参数名称：<input class="key" type="text" value="${param.key}">
-                        <label style="margin-left: 20px">参数值：</label><input class="value" type="text" value="${param.value}">
-                        <label>${status.index}</label>
+                        <label>参数名称：</label>
+                        <input class="key" type="text" value="${param.key}">
+                        <label style="margin-left: 20px">参数值：</label>
+                        <input class="value" type="text" value="${param.value}">
                     </div>
-
-                    <c:if test="${status.index} % 3 == 2">
-                        <br>
-                    </c:if>
                 </c:forEach>
             </div>
         </div>

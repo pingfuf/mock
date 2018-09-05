@@ -16,6 +16,14 @@ public class MockDao {
     private JdbcTemplate mJdbcTemplate = SqliteManager.getInstance().getJdbcTemplate();
     public static final int PAGE_SIZE = 15;
 
+    public void addMock(MockInfo mockInfo) {
+        String sql = "insert into mock(username, params, filePath, url) values('%s', '%s', '%s', '%s')";
+        String params = JSON.toJSONString(mockInfo.getParams());
+        sql = String.format(sql, mockInfo.getUsername(), params, mockInfo.getPath(), mockInfo.getUrl());
+
+        mJdbcTemplate.execute(sql);
+    }
+
     public List<MockInfo> getMockByUrl(String url, int page) {
         String sql = "select * from mock ";
         if (url != null && url.length() > 0 ) {
@@ -23,6 +31,16 @@ public class MockDao {
         }
         List<Map<String, Object>> maps = mJdbcTemplate.queryForList(sql);
         return parseMockList(maps);
+    }
+
+    public MockInfo getMockById(int id) {
+        String sql = "select * from mock where id=" + id;
+
+        List<Map<String, Object>> maps = mJdbcTemplate.queryForList(sql);
+        if (maps != null && maps.size() > 0) {
+            return parseMockList(maps).get(0);
+        }
+        return null;
     }
 
     public int getMockSize() {
@@ -43,9 +61,10 @@ public class MockDao {
         return parseMockList(maps);
     }
 
-    public boolean updateMock(MockInfo mockInfo) {
+    public void updateMock(MockInfo mockInfo) {
         if (mockInfo == null) {
-            return false;
+            System.out.println("update mock = null");
+            return;
         }
 
         String sql = "update mock set ";
@@ -54,8 +73,9 @@ public class MockDao {
         sql += "filePath='" + mockInfo.getPath() + "',";
         sql += "url='" + mockInfo.getUrl() + "' ";
         sql += "where id=" + mockInfo.getId();
+        System.out.println("update mock = "  + sql);
+
         mJdbcTemplate.execute(sql);
-        return FileUtil.writeFile(mockInfo.getPath(), mockInfo.getContent());
     }
 
     public boolean hasMockExisted(MockInfo mockInfo) {
@@ -70,7 +90,6 @@ public class MockDao {
                 sql += " and params='" + JSON.toJSONString(mockInfo.getParams().toString()) + "'";
             }
 
-            sql += mockInfo.getUsername();
             List<Map<String, Object>> maps = mJdbcTemplate.queryForList(sql);
             if (maps != null && maps.size() > 0) {
                 List<MockInfo> mockInfos = parseMockList(maps);
@@ -84,17 +103,13 @@ public class MockDao {
         return flag;
     }
 
-    public boolean addMock(MockInfo mockInfo) {
-        return false;
-    }
-
     public List<MockInfo> getMockList(String username, String params, String url) {
         List<Map<String, Object>> maps = getMockByUsernameAndUrl(username, url);
         List<MockInfo> mockInfos = parseMockList(maps);
         List<MockInfoTemp> tempMocks = new ArrayList<MockInfoTemp>();
         if (mockInfos != null && mockInfos.size() > 0) {
             for(MockInfo mockInfo : mockInfos) {
-                float similarity = getSimilarity(mockInfo, username, params);
+                float similarity = getSimilarity(mockInfo.getUsername(), mockInfo.getParams(), username, params);
                 if (similarity > 0.5f) {
                     MockInfoTemp temp = new MockInfoTemp();
                     temp.similarity = similarity;
@@ -139,11 +154,7 @@ public class MockDao {
         return mockInfo;
     }
 
-    public boolean insertMock(MockInfo mockInfo) {
-        return false;
-    }
-
-    public boolean deleteMock(int id, String filePath) {
+    public boolean deleteMock(int id) {
         return false;
     }
 
@@ -176,16 +187,7 @@ public class MockDao {
         MockInfo mockInfo = new MockInfo();
         mockInfo.setId(Integer.valueOf(map.get("id").toString()));
         mockInfo.setUsername(String.valueOf(map.get("username")));
-        if (map.get("params") != null) {
-            String params = map.get("params").toString();
-            Map<String, Object> paramMap = null;
-            try {
-                paramMap = JSON.parseObject(map.get("params").toString());
-            } catch (Exception e) {
-//                e.printStackTrace();
-            }
-            mockInfo.setParams(paramMap);
-        }
+        mockInfo.setParams(String.valueOf(map.get("params")));
         mockInfo.setUrl(String.valueOf(map.get("url")));
         mockInfo.setPath(String.valueOf(map.get("filePath")));
 
@@ -200,33 +202,39 @@ public class MockDao {
      * 得到两个参数的相似度
      * 计算规则如下：如果
      *
-     * @param mockInfo
+     * @param username
+     * @param params
      * @param targetUsername
      * @param targetParams
      * @return
      */
-    private float getSimilarity(MockInfo mockInfo, String targetUsername, String targetParams) {
-        if (mockInfo == null) {
+    private float getSimilarity(String username, String params, String targetUsername, String targetParams) {
+        if (username == null && params == null) {
             return 0;
         }
 
         float similarity = 0;
-        if (mockInfo.getUsername() != null && mockInfo.getUsername().equalsIgnoreCase(targetUsername)) {
+        if (username != null && username.equalsIgnoreCase(targetUsername)) {
             similarity = similarity + 1.0f;
         }
 
-        if (mockInfo.getParams() != null && mockInfo.getParams().size() > 0) {
-            int size = mockInfo.getParams().size();
-            Map<String, Object> targetMap = JSON.parseObject(targetParams);
+        Map<String, Object> paramMap = null;
+        Map<String, Object> targetMap = null;
+        try {
+            paramMap = JSON.parseObject(params);
+            targetMap = JSON.parseObject(targetParams);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (paramMap != null && paramMap.size() > 0 && targetMap != null && targetMap.size() > 0) {
+            int size = paramMap.size();
             float score = 0;
-            if (targetMap != null) {
-                for (String key : targetMap.keySet()) {
-                    if (mockInfo.getParams().containsKey(key)) {
-                        score += 0.5f;
+            for (String key : targetMap.keySet()) {
+                if (paramMap.containsKey(key)) {
+                    score += 0.5f;
 
-                        if (mockInfo.getParams().get(key) != null && mockInfo.getParams().get(key).equals(targetMap.get(key))) {
-                            score += 0.5f;
-                        }
+                    if (paramMap.get(key) != null && paramMap.get(key).equals(targetMap.get(key))) {
+                        score += 0.5f;
                     }
                 }
             }

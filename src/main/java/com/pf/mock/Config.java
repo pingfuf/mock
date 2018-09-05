@@ -21,7 +21,7 @@ public class Config {
      *
      * @return mock数据的根路径
      */
-    public static String getBaseRootDirPath() {
+    public static String getMockDataDir() {
         File file = new File(SERVER_PATH);
         if (!file.canRead()) {
             return null;

@@ -11,10 +11,10 @@ public class SqliteManager {
     private static SqliteManager mInstance = new SqliteManager();
     private JdbcTemplate jdbcTemplate;
     private SqliteManager() {
-        System.out.println("jdbc:sqlite:" + getUrl());
+        System.out.println("jdbc:sqlite:" + Config.getDatabaseUrl());
         DriverManagerDataSource dataSource = new SingleConnectionDataSource();
         dataSource.setDriverClassName("org.sqlite.JDBC");
-        dataSource.setUrl("jdbc:sqlite:" + getUrl());
+        dataSource.setUrl("jdbc:sqlite:" + Config.getDatabaseUrl());
         jdbcTemplate = new JdbcTemplate();
         jdbcTemplate.setDataSource(dataSource);
     }
@@ -25,9 +25,5 @@ public class SqliteManager {
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
-    }
-
-    public String getUrl() {
-        return Config.ROOT_DIR + File.separator + "mock.db";
     }
 }

@@ -51,6 +51,10 @@ public class MockService {
         return parseMockByUri(uri);
     }
 
+    public MockInfo getMockById(int id) {
+        return mockDao.getMockById(id);
+    }
+
     public MockInfo getMockByUriAndParams(String uri, String prams) {
         return null;
     }
@@ -62,24 +66,39 @@ public class MockService {
      * @return 是否更新成功
      */
     public boolean updateMock(MockInfo mockInfo) {
-        return mockDao.updateMock(mockInfo);
+        if (mockInfo == null) {
+            return false;
+        }
+        String filePath = mockInfo.getPath();
+        if (filePath == null || filePath.length() == 0 || !(new File(filePath).exists())) {
+            filePath = Config.getMockDataDir() + File.separator + mockInfo.getUsername() + "_" + System.currentTimeMillis();
+            mockInfo.setPath(filePath);
+        }
+        mockDao.updateMock(mockInfo);
+
+        return FileUtil.writeFile(filePath, mockInfo.getContent());
     }
 
     public boolean addMock(MockInfo mockInfo) {
-        return mockDao.addMock(mockInfo);
+        if (mockInfo == null) {
+            return false;
+        }
+        String filePath = mockInfo.getPath();
+        if (filePath == null || filePath.length() == 0) {
+            filePath = mockInfo.getUsername() + System.currentTimeMillis();
+            mockInfo.setPath(filePath);
+        }
+        mockDao.addMock(mockInfo);
+
+        return FileUtil.writeFile(filePath, mockInfo.getContent());
     }
 
     public boolean hasMockExisted(MockInfo mockInfo) {
         return mockDao.hasMockExisted(mockInfo);
     }
 
-    public boolean deleteMock(String uri) {
-        if (uri == null || uri.length() == 0) {
-            return false;
-        }
-
-        String path = uri.replaceAll("/", "_");
-        return new File(getLocalPath(path)).delete();
+    public boolean deleteMock(MockInfo mockInfo) {
+        return new File(mockInfo.getPath()).delete() && mockDao.deleteMock(mockInfo.getId());
     }
 
     private MockInfo parseMockByUri(String uri) {

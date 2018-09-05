@@ -29,7 +29,7 @@ public class App {
         paramMap.put("aa", "aab");
         paramMap.put("cc", 2);
         paramMap.put("dd", "{\"bb\": 1}");
-        mockInfo.setParams(paramMap);
+        mockInfo.setParams(JSON.toJSONString(paramMap));
 
         String json = JSON.toJSONString(mockInfo);
         Map<String, Object> tempMap1 = JSON.parseObject(json);
