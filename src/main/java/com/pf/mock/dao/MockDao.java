@@ -154,8 +154,9 @@ public class MockDao {
         return mockInfo;
     }
 
-    public boolean deleteMock(int id) {
-        return false;
+    public void deleteMock(int id) {
+        String sql = "delete from mock where id=" + id;
+        mJdbcTemplate.execute(sql);
     }
 
     private List<Map<String, Object>> getMockByUsernameAndUrl(String username, String url) {

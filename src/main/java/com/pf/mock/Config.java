@@ -9,10 +9,11 @@ import java.net.UnknownHostException;
  */
 public class Config {
     public static final String SERVER_PATH = System.getProperty("mock.root");
+    private static final String ROOT_DIR = initMockPath();
 
-    public static final String BASE_DIR = "data";
+    public static final String DATA_DIR = "data";
 
-    public static final String ROOT_DIR = initMockPath();
+    public static final String RES_DIR = "res";
 
     public static String serverIp;
 
@@ -22,17 +23,7 @@ public class Config {
      * @return mock数据的根路径
      */
     public static String getMockDataDir() {
-        File file = new File(SERVER_PATH);
-        if (!file.canRead()) {
-            return null;
-        }
-
-        File parent = file.getParentFile();
-        if (parent == null || !parent.canRead()) {
-            return null;
-        }
-
-        String path = parent.getAbsolutePath() + File.separator + BASE_DIR;
+        String path = ROOT_DIR + File.separator + DATA_DIR;
         File rootDir = new File(path);
         if (!rootDir.exists()) {
             rootDir.mkdirs();
@@ -60,7 +51,7 @@ public class Config {
     }
 
     public static String getResourceDir() {
-        String path = ROOT_DIR + File.separator + "res";
+        String path = ROOT_DIR + File.separator + RES_DIR;
         File file = new File(path);
         if (!file.exists()) {
             file.mkdirs();

@@ -93,7 +93,7 @@ public class RnController extends BaseController {
 
     @RequestMapping("/downloadHy")
     public ResponseEntity<byte[]> downloadHyResource() throws IOException {
-        File file = new File(Config.ROOT_DIR + File.separator + "hy.zip");
+        File file = new File(Config.getResourceDir() + File.separator + "hy.zip");
         byte[] body = null;
         InputStream is = new FileInputStream(file);
         body = new byte[is.available()];
@@ -112,7 +112,7 @@ public class RnController extends BaseController {
         if (localVersion == null || localVersion.length() < 1) {
             return "{}";
         }
-        String path = Config.ROOT_DIR + File.separator + "update";
+        String path = Config.getResourceDir() + File.separator + "update";
         String type = "andr".equals(phoneType) ? "android" : "ios";
         path = path + File.separator + type + "_";
         path = path + mService.getLatestVersion().getName();
@@ -127,7 +127,7 @@ public class RnController extends BaseController {
     }
 
     private File getResponseFile(String phoneType, String localVersion, String requestVersion) {
-        String path = Config.ROOT_DIR + File.separator + "update";
+        String path = Config.getResourceDir() + File.separator + "update";
         String type = "andr".equals(phoneType)? "android" : "ios";
         if (localVersion == null || localVersion.length() < 1) {
             path += File.separator + type + "_" + requestVersion + ".zip";

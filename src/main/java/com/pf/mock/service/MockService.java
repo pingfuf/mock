@@ -85,7 +85,7 @@ public class MockService {
         }
         String filePath = mockInfo.getPath();
         if (filePath == null || filePath.length() == 0) {
-            filePath = mockInfo.getUsername() + System.currentTimeMillis();
+            filePath = Config.getMockDataDir() + File.separator + mockInfo.getUsername() + System.currentTimeMillis();
             mockInfo.setPath(filePath);
         }
         mockDao.addMock(mockInfo);
@@ -98,7 +98,8 @@ public class MockService {
     }
 
     public boolean deleteMock(MockInfo mockInfo) {
-        return new File(mockInfo.getPath()).delete() && mockDao.deleteMock(mockInfo.getId());
+        mockDao.deleteMock(mockInfo.getId());
+        return new File(mockInfo.getPath()).delete();
     }
 
     private MockInfo parseMockByUri(String uri) {
@@ -133,9 +134,10 @@ public class MockService {
     }
 
     private String getLocalPath(String path) {
-        String localPath = "";
-        if (path != null) {
-            localPath = Config.ROOT_DIR + File.separator + "server" + File.separator + path;
+        String localPath = path;
+        File file = new File(path);
+        if (!file.exists()) {
+            localPath = Config.getMockDataDir() + File.separator + path;
         }
 
         return localPath;
