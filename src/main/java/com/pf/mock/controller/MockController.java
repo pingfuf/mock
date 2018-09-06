@@ -33,17 +33,10 @@ public class MockController extends BaseController {
     }
 
     @RequestMapping("showMockList")
-    public ModelAndView showMockList(@RequestParam(defaultValue = "") String url) {
+    public ModelAndView showMockList(@RequestParam(required = false, defaultValue = "") String url) {
         ModelAndView modelAndView = new ModelAndView("mockList");
         List<MockInfo> mockInfos = mockService.getMockList(url);
         modelAndView.addObject("mockList", mockInfos);
-        int size = mockInfos != null ? mockInfos.size() : 0;
-        int pageSize = size / MockDao.PAGE_SIZE;
-        if (size % MockDao.PAGE_SIZE != 0) {
-            pageSize = pageSize + 1;
-        }
-
-        modelAndView.addObject("pageSize", pageSize);
         return modelAndView;
     }
 
@@ -84,7 +77,14 @@ public class MockController extends BaseController {
         ArrayList<ReqParam> params = new ArrayList<ReqParam>();
         ReqParam param;
         try {
-            Map<String, Object> paramMap = JSON.parseObject(mockInfo.getParams());
+            System.out.println(mockInfo.getParams());
+            String json = mockInfo.getParams();
+            if (json != null && json.startsWith("\"")) {
+                json = json.substring(1, json.length()-1);
+            }
+            System.out.println(json);
+            Map<String, Object> paramMap = JSON.parseObject(json);
+            System.out.println(json);
             if (paramMap != null && paramMap.size() > 0) {
                 for (String key : paramMap.keySet()) {
                     param = new ReqParam();
@@ -115,6 +115,7 @@ public class MockController extends BaseController {
             return createResult(-1, null);
         }
 
+        System.out.println("update = " + params);
         MockInfo mockInfo = new MockInfo();
         mockInfo.setId(id);
         mockInfo.setUrl(url);

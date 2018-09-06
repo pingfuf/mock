@@ -146,7 +146,7 @@
                     id: id,
                     url: url,
                     username: username,
-                    params: getParams(),
+                    params: JSON.stringify(getParams()),
                     content: content,
                     path: path
                 }, function (e) {
@@ -163,14 +163,12 @@
         });
 
         function getParams() {
-            var params = '{';
+            var params = {};
             var defaultKey = $("#defaultParamKey").val();
             var defaultValue = $("#defaultParamValue").val();
-            var hasDefaultValue = false;
             if (defaultKey !== null && defaultKey.toString().length > 0
                 && defaultValue !== null && defaultValue.toString().length > 0) {
-                params += '"' + defaultKey + '":' + '"' + defaultValue + '"';
-                hasDefaultValue = true;
+                params[defaultKey] = defaultValue;
             }
             var $keys = $(".key");
             var $values = $(".value");
@@ -180,15 +178,10 @@
                     var key = $keys.eq(i).val();
                     var value = $values.eq(i).val();
                     if (key !== null && key.toString().length > 0 && value !== null) {
-                        if (num === 0 && hasDefaultValue) {
-                            params += ',';
-                        }
-                        params += '"' + key + '":' + '"' + value + '"';
-                        num ++;
+                        params[key] = value;
                     }
                 }
             }
-            params += "}";
 
             return params;
         }
@@ -221,7 +214,7 @@
                     <div class="paramItem">
                         <label>参数名称：</label>
 
-                        <input class="key" type="text" value="${temp.key}">
+                        <input class="key" type="text" value="${paramList.get(status.index).key}">
                         <label style="margin-left: 20px">参数值：</label>
                         <input class="value" type="text" value="${temp.value}">
                     </div>

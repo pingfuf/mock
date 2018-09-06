@@ -77,9 +77,9 @@
             </c:forEach>
         </table>
         <div id="bottom">
-            <label>共<label id="totalPage">${pageSize}</label>页</label>
+            <label>共<label id="totalPage"></label>页</label>
             <button id="prePage" style="margin-left: 10px">上一页</button>
-            <label style="margin-left: 10px; margin-right: 10px">第<label id="currentPage">${currentPage}</label>页</label>
+            <label style="margin-left: 10px; margin-right: 10px">第<label id="currentPage">1</label>页</label>
             <button id="nextPage">下一页</button>
         </div>
     </div>
@@ -87,7 +87,6 @@
         $(document).ready(function () {
             $(".mockItem:odd").css("background", "#cbcbcb");
 
-            var totalPage = parseInt($("#totalPage").text());
             var currentPage = 1;
             var pageSize = 14;
             var $mockItems = $(".mockItem");
@@ -99,6 +98,12 @@
                     $mockItems.eq(i).hide();
                 }
             }
+
+            var totalPage = parseInt(size / pageSize);
+            if (totalPage % pageSize !== 0) {
+                totalPage = totalPage + 1;
+            }
+            $("#totalPage").text(totalPage);
 
             $("#prePage").click(function(){
                if (currentPage > 1) {
@@ -130,12 +135,13 @@
         });
 
         function deleteMock(id, path) {
-            alert(id + ", " + path);
             var url = "./mock/delete?id=" + id + "&path=" + path;
             $.get(url, function (e) {
                 if (e !== null && e.code === 0) {
                     alert("删除成功");
                 }
+                var $search = $("#search", window.parent.document);
+                $search.trigger("click");
             });
         }
     </script>

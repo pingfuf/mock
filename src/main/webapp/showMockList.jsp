@@ -51,20 +51,16 @@
 <body>
     <script language="JavaScript">
         $(document).ready(function () {
-            var url;
-            var serverUrl = "./mock/showMockList";
-            var currentPage = $("#currentPage").val();
-
             $("#search").click(function(){
-                url = $("#mockName").val();
+                var serverUrl = "./mock/showMockList";
+                var url = $("#mockName").val();
                 if (url !== null && url.length > 0) {
-                    serverUrl = serverUrl + "&url=" + url;
+                    serverUrl = serverUrl + "?url=" + url;
                 }
-                currentPage = 1;
-                $("#currentPage").text(currentPage);
-                $("#iframe").src = serverUrl;
-            });
 
+                var $iframe = $("#iframe");
+                $iframe.attr("src", serverUrl);
+            });
         });
     </script>
 
@@ -75,7 +71,7 @@
             <input id="search" class="button" type="button" value="搜索">
             <input id="add" class="button" type="button" value="添加">
         </div>
-        <iframe id="iframe" class="iframe" src="./mock/showMockList?page=0"></iframe>
+        <iframe id="iframe" class="iframe" src="./mock/showMockList"></iframe>
     </div>
 </body>
 </html>

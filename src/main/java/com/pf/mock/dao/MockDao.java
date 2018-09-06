@@ -18,8 +18,7 @@ public class MockDao {
 
     public void addMock(MockInfo mockInfo) {
         String sql = "insert into mock(username, params, filePath, url) values('%s', '%s', '%s', '%s')";
-        String params = JSON.toJSONString(mockInfo.getParams());
-        sql = String.format(sql, mockInfo.getUsername(), params, mockInfo.getPath(), mockInfo.getUrl());
+        sql = String.format(sql, mockInfo.getUsername(), mockInfo.getParams(), mockInfo.getPath(), mockInfo.getUrl());
 
         mJdbcTemplate.execute(sql);
     }
@@ -69,7 +68,7 @@ public class MockDao {
 
         String sql = "update mock set ";
         sql += "username='" + mockInfo.getUsername() + "',";
-        sql += "params='" + JSON.toJSONString(mockInfo.getParams()) + "',";
+        sql += "params='" + mockInfo.getParams() + "',";
         sql += "filePath='" + mockInfo.getPath() + "',";
         sql += "url='" + mockInfo.getUrl() + "' ";
         sql += "where id=" + mockInfo.getId();
