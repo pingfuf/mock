@@ -1,3 +1,5 @@
+<%@ page import="com.pf.mock.data.ReqParam" %>
+<%@ page import="java.util.List" %>
 <%--
   Created by IntelliJ IDEA.
   User: pingfu
@@ -215,12 +217,13 @@
                 <input id="defaultParamValue" type="text" value="">
             </div>
             <div id="param">
-                <c:forEach items="${paramList}" var="param">
+                <c:forEach items="${paramList}" var="temp" varStatus="status">
                     <div class="paramItem">
                         <label>参数名称：</label>
-                        <input class="key" type="text" value="${param.key}">
+
+                        <input class="key" type="text" value="${temp.key}">
                         <label style="margin-left: 20px">参数值：</label>
-                        <input class="value" type="text" value="${param.value}">
+                        <input class="value" type="text" value="${temp.value}">
                     </div>
                 </c:forEach>
             </div>

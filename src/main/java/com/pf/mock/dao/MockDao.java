@@ -24,7 +24,7 @@ public class MockDao {
         mJdbcTemplate.execute(sql);
     }
 
-    public List<MockInfo> getMockByUrl(String url, int page) {
+    public List<MockInfo> getMockByUrl(String url) {
         String sql = "select * from mock ";
         if (url != null && url.length() > 0 ) {
             sql = sql + "where url='" + url + "'";

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,14 +28,14 @@ public class MockController extends BaseController {
 
     @RequestMapping("/getMockList")
     @ResponseBody
-    public List<MockInfo> getMockList(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page) {
+    public List<MockInfo> getMockList(@RequestParam(defaultValue = "0") int page) {
         return mockService.getMockList(page);
     }
 
     @RequestMapping("showMockList")
-    public ModelAndView showMockList(@org.springframework.web.bind.annotation.RequestParam(defaultValue = "") String url, @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page) {
+    public ModelAndView showMockList(@RequestParam(defaultValue = "") String url) {
         ModelAndView modelAndView = new ModelAndView("mockList");
-        List<MockInfo> mockInfos = mockService.getMockList(url, page);
+        List<MockInfo> mockInfos = mockService.getMockList(url);
         modelAndView.addObject("mockList", mockInfos);
         int size = mockInfos != null ? mockInfos.size() : 0;
         int pageSize = size / MockDao.PAGE_SIZE;
@@ -43,65 +44,60 @@ public class MockController extends BaseController {
         }
 
         modelAndView.addObject("pageSize", pageSize);
-        modelAndView.addObject("currentPage", page + 1);
         return modelAndView;
     }
 
     @RequestMapping("/getMock/**")
     @ResponseBody
-    public String getMockInfoContent(HttpServletRequest request) {
+    public String getMockInfoContent(HttpServletRequest request,
+                                     @RequestParam(required = false, defaultValue = "") String username,
+                                     @RequestParam(required = false, defaultValue = "") String param) {
         String url = request.getRequestURI().toString();
         String content = "";
+        MockInfo mockInfo = null;
         if (url.startsWith("/mock/mock/getMock")) {
             String uri = url.substring("/mock/mock/getMock/".length(), url.length());
-            MockInfo mockInfo = mockService.getMockByUri(uri);
-            content = mockInfo.getContent();
+            mockInfo = mockService.getSimilarlyMock(username, param, uri);
+            if (mockInfo != null) {
+                content = mockInfo.getContent();
+            }
         }
         if (content.length() == 0) {
-            content = url;
+            content = JSON.toJSONString(mockInfo);
         }
         return content;
     }
 
     @RequestMapping("/getMockInfo")
     @ResponseBody
-    public MockInfo getMockInfo(@org.springframework.web.bind.annotation.RequestParam String url) {
+    public MockInfo getMockInfo(@RequestParam String url) {
         MockInfo mockInfo = mockService.getMockByUri(url);
         return mockInfo;
     }
 
     @RequestMapping("/update")
-    public ModelAndView updateMockInfo(@org.springframework.web.bind.annotation.RequestParam int id) {
+    public ModelAndView updateMockInfo(@RequestParam int id) {
         ModelAndView modelAndView = new ModelAndView("updateMock");
         MockInfo mockInfo = mockService.getMockById(id);
         modelAndView.addObject("mock", mockInfo);
 
         ArrayList<ReqParam> params = new ArrayList<ReqParam>();
-//        try {
-//            Map<String, Object> paramMap = JSON.parseObject(mockInfo.getParams());
-//            if (paramMap != null && paramMap.size() > 0) {
-//                for (String key : paramMap.keySet()) {
-//                    System.out.println("key=" + key + ", value=" + paramMap.get(key));
-//                    ReqParam param = new ReqParam();
-//                    param.setKey(key);
-//                    param.setValue(String.valueOf(paramMap.get(key)));
-//
-//                    params.add(param);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        ReqParam param1 = new ReqParam();
-        param1.setKey("aa");
-        param1.setValue("bb");
-        params.add(param1);
+        ReqParam param;
+        try {
+            Map<String, Object> paramMap = JSON.parseObject(mockInfo.getParams());
+            if (paramMap != null && paramMap.size() > 0) {
+                for (String key : paramMap.keySet()) {
+                    param = new ReqParam();
+                    param.setKey(key);
+                    param.setValue(String.valueOf(paramMap.get(key)));
 
-        ReqParam param2 = new ReqParam();
-        param2.setKey("aa");
-        param2.setValue("bb");
-        params.add(param2);
-        modelAndView.addObject("paramTemp", param1);
+                    System.out.println("key=" + param.getKey() + ", value=" + param.getValue());
+                    params.add(param);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         modelAndView.addObject("paramList", params);
 
         return modelAndView;
@@ -109,12 +105,12 @@ public class MockController extends BaseController {
 
     @RequestMapping("/doUpdate")
     @ResponseBody
-    public BaseResult updateMockInfo(@org.springframework.web.bind.annotation.RequestParam String url,
-                                     @org.springframework.web.bind.annotation.RequestParam(required = false, defaultValue = "0")int id,
-                                     @org.springframework.web.bind.annotation.RequestParam(required = false, defaultValue = "")String username,
-                                     @org.springframework.web.bind.annotation.RequestParam(required = false, defaultValue = "")String params,
-                                     @org.springframework.web.bind.annotation.RequestParam(required = false, defaultValue = "")String path,
-                                     @org.springframework.web.bind.annotation.RequestParam String content) {
+    public BaseResult updateMockInfo(@RequestParam String url,
+                                     @RequestParam(required = false, defaultValue = "0")int id,
+                                     @RequestParam(required = false, defaultValue = "")String username,
+                                     @RequestParam(required = false, defaultValue = "")String params,
+                                     @RequestParam(required = false, defaultValue = "")String path,
+                                     @RequestParam String content) {
         if (url == null) {
             return createResult(-1, null);
         }
@@ -139,7 +135,7 @@ public class MockController extends BaseController {
 
     @RequestMapping("/delete")
     @ResponseBody
-    public BaseResult deleteMockInfo(@org.springframework.web.bind.annotation.RequestParam int id, @org.springframework.web.bind.annotation.RequestParam String path) {
+    public BaseResult deleteMockInfo(@RequestParam int id, @RequestParam String path) {
         MockInfo mockInfo = new MockInfo();
         mockInfo.setId(id);
         mockInfo.setPath(path);
@@ -159,7 +155,7 @@ public class MockController extends BaseController {
     @ResponseBody
     public BaseResult temp(HttpServletRequest request) {
         MockDao mockDao = new MockDao();
-        List<MockInfo> mockInfos = mockDao.getMockByUrl("ee3", 0);
+        List<MockInfo> mockInfos = mockDao.getMockByUrl("ee3");
 
         return createResult(0, mockInfos);
     }

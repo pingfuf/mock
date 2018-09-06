@@ -37,8 +37,8 @@ public class MockService {
      * @param uri mock的uri
      * @return 和uri相似的mock数据列表
      */
-    public List<MockInfo> getMockList(String uri, int page) {
-        return mockDao.getMockByUrl(uri, page);
+    public List<MockInfo> getMockList(String uri) {
+        return mockDao.getMockByUrl(uri);
     }
 
     /**
@@ -48,15 +48,15 @@ public class MockService {
      * @return mock数据
      */
     public MockInfo getMockByUri(String uri) {
-        return parseMockByUri(uri);
+        return mockDao.getMockByUrl(uri).get(0);
     }
 
     public MockInfo getMockById(int id) {
         return mockDao.getMockById(id);
     }
 
-    public MockInfo getMockByUriAndParams(String uri, String prams) {
-        return null;
+    public MockInfo getSimilarlyMock(String username, String param, String uri) {
+        return mockDao.getMockInfo(username, param, uri);
     }
 
     /**
